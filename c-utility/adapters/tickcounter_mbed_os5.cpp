@@ -48,13 +48,11 @@ typedef struct TICK_COUNTER_INSTANCE_TAG
 
 TICK_COUNTER_HANDLE tickcounter_create(void)
 {
-    core_util_critical_section_enter();
     if (cycle_ticker == NULL)
     {
         cycle_ticker = new Ticker();
         cycle_ticker->attach(cycle_accumulator, TICKER_INTERVAL);
     }
-    core_util_critical_section_exit();
 
     TICK_COUNTER_INSTANCE *result;
     result = new TICK_COUNTER_INSTANCE;
