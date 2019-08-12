@@ -10,9 +10,10 @@
 #include "azure_c_shared_utility/tcpsocketconnection_c.h"
 #include "azure_c_shared_utility/optimize_size.h"
 #include "azure_c_shared_utility/xlogging.h"
+#include "azure_c_shared_utility/threadapi.h"
 #include "netsocket/nsapi_types.h"
 
-#define MBED_RECEIVE_BYTES_VALUE    128
+#define MBED_RECEIVE_BYTES_VALUE    2048
 
 typedef enum IO_STATE_TAG
 {
@@ -164,9 +165,10 @@ static int retrieve_data(SOCKET_IO_INSTANCE* socket_io_instance)
             if (socket_io_instance->on_bytes_received != NULL)
             {
                 /* explictly ignoring here the result of the callback */
+				//LogInfo("socket_io_instance->on_bytes_received: %d", received);
                 socket_io_instance->on_bytes_received(socket_io_instance->on_bytes_received_context, recv_bytes, received);
             }
-        }
+		}
         else if (received < 0)
         {
             if(received != NSAPI_ERROR_WOULD_BLOCK)     // NSAPI_ERROR_WOULD_BLOCK is not a real error but pending.
@@ -213,7 +215,7 @@ static int send_queued_data(SOCKET_IO_INSTANCE* socket_io_instance)
                     indicate_error(socket_io_instance);
                     return -1;
                 }
-                wait_ms(10);
+				ThreadAPI_Sleep(10);
             }
             else if (send_result < 0)
             {

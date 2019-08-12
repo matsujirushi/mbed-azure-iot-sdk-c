@@ -181,6 +181,7 @@ static void on_underlying_io_bytes_received(void *context, const unsigned char *
         }
         else
         {
+			LogInfo("on_underlying_io_bytes_received %d (%d -> %d)", size, tls_io_instance->socket_io_read_byte_count, tls_io_instance->socket_io_read_byte_count + size);
             tls_io_instance->socket_io_read_bytes = new_socket_io_read_bytes;
             (void)memcpy(tls_io_instance->socket_io_read_bytes + tls_io_instance->socket_io_read_byte_count, buffer, size);
             tls_io_instance->socket_io_read_byte_count += size;
@@ -321,6 +322,9 @@ static int on_io_recv(void *context, unsigned char *buf, size_t sz)
             result = MBEDTLS_ERR_SSL_WANT_READ;
         }
     }
+
+	//if (result >= 1) LogInfo("on_io_recv(): %d", result);
+
     return result;
 }
 
@@ -336,6 +340,7 @@ static int on_io_send(void *context, const unsigned char *buf, size_t sz)
     {
         TLS_IO_INSTANCE *tls_io_instance = (TLS_IO_INSTANCE *)context;
 
+		//LogInfo("on_io_send(): %d", sz);
         if (xio_send(tls_io_instance->socket_io, buf, sz, tls_io_instance->on_send_complete, tls_io_instance->on_send_complete_callback_context) != 0)
         {
             indicate_error(tls_io_instance);
