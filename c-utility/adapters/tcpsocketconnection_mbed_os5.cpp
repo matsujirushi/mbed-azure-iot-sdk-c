@@ -6,6 +6,7 @@
 #include <stddef.h>
 #include "TCPSocket.h"
 #include "azure_c_shared_utility/tcpsocketconnection_c.h"
+#include "azure_c_shared_utility/xlogging.h"
 
 // The NetworkInterface instance of network device
 extern NetworkInterface *_defaultSystemNetwork;
@@ -72,6 +73,7 @@ int tcpsocketconnection_send(TCPSOCKETCONNECTION_HANDLE tcpSocketConnectionHandl
 	if (tcpSocketConnectionHandle != NULL)
 	{
 		TCPSocket* tsc = (TCPSocket*)tcpSocketConnectionHandle;
+		LogInfo("TCPSocket.send() = %d", length);
 		return tsc->send((char*)data, length);
 	}
 	
@@ -83,6 +85,7 @@ int tcpsocketconnection_send_all(TCPSOCKETCONNECTION_HANDLE tcpSocketConnectionH
 	if (tcpSocketConnectionHandle != NULL)
 	{
 		TCPSocket* tsc = (TCPSocket*)tcpSocketConnectionHandle;
+		LogInfo("TCPSocket.send() = %d", length);
 		return tsc->send((char*)data, length);
 	}
 	return -1;
@@ -93,7 +96,9 @@ int tcpsocketconnection_receive(TCPSOCKETCONNECTION_HANDLE tcpSocketConnectionHa
 	if (tcpSocketConnectionHandle != NULL)
 	{
 		TCPSocket* tsc = (TCPSocket*)tcpSocketConnectionHandle;
-		return tsc->recv(data, length);
+		auto ret = tsc->recv(data, length);
+		if (ret >= 1) LogInfo("TCPSocket.recv() = %d", ret);
+		return ret;
 	}
 	return -1;
 }
@@ -103,7 +108,9 @@ int tcpsocketconnection_receive_all(TCPSOCKETCONNECTION_HANDLE tcpSocketConnecti
 	if (tcpSocketConnectionHandle != NULL)
 	{
 		TCPSocket* tsc = (TCPSocket*)tcpSocketConnectionHandle;
-		return tsc->recv(data, length);
+		auto ret = tsc->recv(data, length);
+		if (ret >= 1) LogInfo("TCPSocket.recv() = %d", ret);
+		return ret;
 	}
 	return -1;
 }
